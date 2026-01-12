@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard | Gestion des Formations</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+<!-- jsPDF & Excel -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<style>
+body {
+    background: #f5f7fb;
+    font-family: "Segoe UI", sans-serif;
+}
+.navbar {
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+.card-kpi {
+    border: none;
+    border-radius: 12px;
+}
+.card-kpi h2 {
+    font-weight: 700;
+}
+.table thead {
+    background: #212529;
+}
+.modal-content {
+    border-radius: 12px;
+}
+.btn {
+    border-radius: 8px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- TOPBAR -->
+<nav class="navbar navbar-dark bg-dark px-4">
+    <span class="navbar-brand fw-bold">
+        🎓 Gestion des Formations
+    </span>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalForm">
+        <i class="bi bi-plus-circle"></i> Nouveau
+    </button>
+</nav>
+
+<div class="container-fluid p-4">
+
+<!-- KPI -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card card-kpi shadow-sm bg-primary text-white">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <small>Formations disponibles</small>
+                    <h2>6</h2>
+                </div>
+                <i class="bi bi-journal-richtext fs-1 opacity-50"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card card-kpi shadow-sm bg-success text-white">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <small>Total apprentis</small>
+                    <h2 id="totalApprentis">0</h2>
+                </div>
+                <i class="bi bi-people fs-1 opacity-50"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TOOLS -->
+<div class="card shadow-sm mb-3">
+<div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <input type="text" id="recherche" class="form-control w-auto" placeholder="🔍 Rechercher..." onkeyup="afficherApprentis()">
+    <div>
+        <button class="btn btn-outline-danger btn-sm" onclick="exportPDF()">
+            <i class="bi bi-file-earmark-pdf"></i> PDF
+        </button>
+        <button class="btn btn-outline-success btn-sm" onclick="exportExcel()">
+            <i class="bi bi-file-earmark-excel"></i> Excel
+        </button>
+    </div>
+</div>
+</div>
+
+<!-- TABLE -->
+<div class="card shadow-sm">
+<div class="card-body table-responsive">
+<table class="table table-hover align-middle">
+<thead>
+<tr>
+    <th>#</th>
+    <th>Apprenti</th>
+    <th>Formation</th>
+    <th>Formateur</th>
+    <th>Jours</th>
+    <th class="text-center">Actions</th>
+</tr>
+</thead>
+<tbody id="tableApprentis"></tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal fade" id="modalForm">
+<div class="modal-dialog modal-lg modal-dialog-centered">
+<div class="modal-content">
+
+<div class="modal-header bg-dark text-white">
+    <h5 class="modal-title">
+        <i class="bi bi-pencil-square"></i> Enregistrement
+    </h5>
+    <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body">
+<input type="hidden" id="editIndex">
+
+<div class="row g-3">
+<div class="col-md-6">
+    <label class="form-label">Nom de l'apprenti</label>
+    <input type="text" id="apprentiNom" class="form-control">
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">Formation</label>
+    <select id="formationSelect" class="form-select">
+        <option value="">-- Choisir --</option>
+        <option>Comptabilité SYSCOHADA révisé</option>
+        <option>Développement Web Full Stack</option>
+        <option>Excel d’entreprise</option>
+        <option>Entrepôt de données avec Power BI</option>
+        <option>Analyse de données SPSS et R</option>
+        <option>Économétrie</option>
+    </select>
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">Nom du formateur</label>
+    <input type="text" id="formateurNom" class="form-control">
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">Nombre de jours</label>
+    <input type="number" id="nbJours" class="form-control">
+</div>
+</div>
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+    <button class="btn btn-success" onclick="enregistrer()">
+        <i class="bi bi-save"></i> Enregistrer
+    </button>
+</div>
+
+</div>
+</div>
+</div>
+
+<script>
+let apprentis = JSON.parse(localStorage.getItem("apprentis")) || [];
+
+function enregistrer() {
+    const nom = apprentiNom.value.trim();
+    const formation = formationSelect.value;
+    const formateur = formateurNom.value.trim();
+    const jours = nbJours.value;
+    const index = editIndex.value;
+
+    if (!nom || !formation || !formateur || !jours) return alert("Tous les champs sont obligatoires");
+
+    const data = { nom, formation, formateur, jours };
+
+    index === "" ? apprentis.push(data) : apprentis[index] = data;
+
+    localStorage.setItem("apprentis", JSON.stringify(apprentis));
+    resetForm();
+    afficherApprentis();
+    dashboard();
+    bootstrap.Modal.getInstance(modalForm).hide();
+}
+
+function afficherApprentis() {
+    const search = recherche.value.toLowerCase();
+    tableApprentis.innerHTML = "";
+    apprentis.forEach((a, i) => {
+        if (a.nom.toLowerCase().includes(search) || a.formation.toLowerCase().includes(search)) {
+            tableApprentis.innerHTML += `
+            <tr>
+                <td>${i+1}</td>
+                <td>${a.nom}</td>
+                <td><span class="badge bg-secondary">${a.formation}</span></td>
+                <td>${a.formateur}</td>
+                <td>${a.jours}</td>
+                <td class="text-center">
+                    <button class="btn btn-warning btn-sm" onclick="modifier(${i})"><i class="bi bi-pencil"></i></button>
+                    <button class="btn btn-danger btn-sm" onclick="supprimer(${i})"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>`;
+        }
+    });
+}
+
+function modifier(i) {
+    const a = apprentis[i];
+    apprentiNom.value = a.nom;
+    formationSelect.value = a.formation;
+    formateurNom.value = a.formateur;
+    nbJours.value = a.jours;
+    editIndex.value = i;
+    new bootstrap.Modal(modalForm).show();
+}
+
+function supprimer(i) {
+    if (confirm("Supprimer cet apprenti ?")) {
+        apprentis.splice(i,1);
+        localStorage.setItem("apprentis", JSON.stringify(apprentis));
+        afficherApprentis();
+        dashboard();
+    }
+}
+
+function dashboard() {
+    totalApprentis.innerText = apprentis.length;
+}
+
+function resetForm() {
+    apprentiNom.value = "";
+    formationSelect.value = "";
+    formateurNom.value = "";
+    nbJours.value = "";
+    editIndex.value = "";
+}
+
+function exportPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.text("Liste des Apprentis", 10, 10);
+    let y = 20;
+    apprentis.forEach(a => {
+        doc.text(`${a.nom} | ${a.formation} | ${a.formateur} | ${a.jours} jours`, 10, y);
+        y += 8;
+    });
+    doc.save("apprentis.pdf");
+}
+
+function exportExcel() {
+    const ws = XLSX.utils.json_to_sheet(apprentis);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Apprentis");
+    XLSX.writeFile(wb, "apprentis.xlsx");
+}
+
+afficherApprentis();
+dashboard();
+</script>
+
+</body>
+</html>
