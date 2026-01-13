@@ -1,278 +1,301 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Dashboard | Gestion des Formations</title>
+<title>Inscription des Participants</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Icons -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-
-<!-- jsPDF & Excel -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-
 <style>
-body {
-    background: #f5f7fb;
-    font-family: "Segoe UI", sans-serif;
+body{
+    background:#f5f7fb;
+    font-family:"Segoe UI", sans-serif;
 }
-.navbar {
-    box-shadow: 0 2px 8px rgba(0,0,0,.08);
-}
-.card-kpi {
-    border: none;
-    border-radius: 12px;
-}
-.card-kpi h2 {
-    font-weight: 700;
-}
-.table thead {
-    background: #212529;
-}
-.modal-content {
-    border-radius: 12px;
-}
-.btn {
-    border-radius: 8px;
+.card{border-radius:12px;}
+.photo-preview{
+    width:55px;
+    height:55px;
+    object-fit:cover;
+    border-radius:50%;
 }
 </style>
 </head>
 
 <body>
 
-<!-- TOPBAR -->
 <nav class="navbar navbar-dark bg-dark px-4">
-    <span class="navbar-brand fw-bold">
-        🎓 Gestion des Formations
-    </span>
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalForm">
-        <i class="bi bi-plus-circle"></i> Nouveau
-    </button>
+    <span class="navbar-brand fw-bold">🎓 Inscription des Participants</span>
 </nav>
 
-<div class="container-fluid p-4">
+<div class="container py-4">
 
-<!-- KPI -->
-<div class="row g-3 mb-4">
-    <div class="col-md-6">
-        <div class="card card-kpi shadow-sm bg-primary text-white">
-            <div class="card-body d-flex justify-content-between align-items-center">
-                <div>
-                    <small>Formations disponibles</small>
-                    <h2>6</h2>
-                </div>
-                <i class="bi bi-journal-richtext fs-1 opacity-50"></i>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6">
-        <div class="card card-kpi shadow-sm bg-success text-white">
-            <div class="card-body d-flex justify-content-between align-items-center">
-                <div>
-                    <small>Total apprentis</small>
-                    <h2 id="totalApprentis">0</h2>
-                </div>
-                <i class="bi bi-people fs-1 opacity-50"></i>
-            </div>
-        </div>
-    </div>
+<!-- ================= FORMULAIRE ================= -->
+<div class="card shadow-sm mb-4">
+<div class="card-header bg-primary text-white fw-bold">
+    Formulaire d’inscription
 </div>
 
-<!-- TOOLS -->
-<div class="card shadow-sm mb-3">
-<div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
-    <input type="text" id="recherche" class="form-control w-auto" placeholder="🔍 Rechercher..." onkeyup="afficherApprentis()">
-    <div>
-        <button class="btn btn-outline-danger btn-sm" onclick="exportPDF()">
-            <i class="bi bi-file-earmark-pdf"></i> PDF
+<div class="card-body">
+<div class="row g-3">
+
+<div class="col-md-4">
+    <label class="form-label">Nom</label>
+    <input type="text" id="nom" class="form-control">
+</div>
+
+<div class="col-md-4">
+    <label class="form-label">Prénom</label>
+    <input type="text" id="prenom" class="form-control">
+</div>
+
+<div class="col-md-4">
+    <label class="form-label">Postnom</label>
+    <input type="text" id="postnom" class="form-control">
+</div>
+
+<div class="col-md-4">
+    <label class="form-label">Sexe</label>
+    <select id="sexe" class="form-select">
+        <option value="">-- Choisir --</option>
+        <option>Masculin</option>
+        <option>Féminin</option>
+    </select>
+</div>
+
+<div class="col-md-4">
+    <label class="form-label">Niveau d’études</label>
+    <select id="niveau" class="form-select">
+        <option value="">-- Choisir --</option>
+        <option>Secondaire</option>
+        <option>Graduat</option>
+        <option>Licence</option>
+        <option>Master</option>
+        <option>Doctorat</option>
+    </select>
+</div>
+
+<div class="col-md-4">
+    <label class="form-label">Téléphone (RDC)</label>
+    <input type="tel" id="telephone" class="form-control" placeholder="+24397xxxxxxx">
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">Adresse</label>
+    <input type="text" id="adresse" class="form-control">
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">Domaine d’étude</label>
+    <input type="text" id="domaine" class="form-control">
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">Profession</label>
+    <input type="text" id="profession" class="form-control">
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">Photo du participant</label>
+    <input type="file" id="photo" class="form-control" accept="image/*">
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">Formation choisie</label>
+    <div class="input-group">
+        <input type="text" id="formation" class="form-control" readonly>
+        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalFormation">
+            Choisir
         </button>
-        <button class="btn btn-outline-success btn-sm" onclick="exportExcel()">
-            <i class="bi bi-file-earmark-excel"></i> Excel
-        </button>
     </div>
+</div>
+
+<div class="col-12 text-end">
+    <button class="btn btn-success" onclick="enregistrer()">Enregistrer</button>
+</div>
+
+</div>
 </div>
 </div>
 
-<!-- TABLE -->
+<!-- ================= TABLE ================= -->
 <div class="card shadow-sm">
+<div class="card-header bg-dark text-white fw-bold">
+    Liste des participants
+</div>
+
 <div class="card-body table-responsive">
 <table class="table table-hover align-middle">
-<thead>
+<thead class="table-dark">
 <tr>
-    <th>#</th>
-    <th>Apprenti</th>
-    <th>Formation</th>
-    <th>Formateur</th>
-    <th>Jours</th>
-    <th class="text-center">Actions</th>
+<th>#</th>
+<th>Photo</th>
+<th>Nom complet</th>
+<th>Téléphone</th>
+<th>Profession</th>
+<th>Formation</th>
+<th>Actions</th>
 </tr>
 </thead>
-<tbody id="tableApprentis"></tbody>
+<tbody id="tableParticipants"></tbody>
 </table>
 </div>
 </div>
 
 </div>
 
-<!-- MODAL -->
-<div class="modal fade" id="modalForm">
-<div class="modal-dialog modal-lg modal-dialog-centered">
+<!-- ================= MODAL FORMATION ================= -->
+<div class="modal fade" id="modalFormation">
+<div class="modal-dialog modal-dialog-centered">
 <div class="modal-content">
 
 <div class="modal-header bg-dark text-white">
-    <h5 class="modal-title">
-        <i class="bi bi-pencil-square"></i> Enregistrement
-    </h5>
+    <h5 class="modal-title">Choisir une formation</h5>
     <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
 </div>
 
 <div class="modal-body">
-<input type="hidden" id="editIndex">
-
-<div class="row g-3">
-<div class="col-md-6">
-    <label class="form-label">Nom de l'apprenti</label>
-    <input type="text" id="apprentiNom" class="form-control">
+<div class="form-check">
+    <input class="form-check-input" type="radio" name="formationRadio" value="Développement Web">
+    <label class="form-check-label">Développement Web</label>
 </div>
-
-<div class="col-md-6">
-    <label class="form-label">Formation</label>
-    <select id="formationSelect" class="form-select">
-        <option value="">-- Choisir --</option>
-        <option>Comptabilité SYSCOHADA révisé</option>
-        <option>Développement Web Full Stack</option>
-        <option>Excel d’entreprise</option>
-        <option>Entrepôt de données avec Power BI</option>
-        <option>Analyse de données SPSS et R</option>
-        <option>Économétrie</option>
-    </select>
+<div class="form-check">
+    <input class="form-check-input" type="radio" name="formationRadio" value="Comptabilité SYSCOHADA">
+    <label class="form-check-label">Comptabilité SYSCOHADA</label>
 </div>
-
-<div class="col-md-6">
-    <label class="form-label">Nom du formateur</label>
-    <input type="text" id="formateurNom" class="form-control">
-</div>
-
-<div class="col-md-6">
-    <label class="form-label">Nombre de jours</label>
-    <input type="number" id="nbJours" class="form-control">
-</div>
+<div class="form-check">
+    <input class="form-check-input" type="radio" name="formationRadio" value="Power BI">
+    <label class="form-check-label">Power BI</label>
 </div>
 </div>
 
 <div class="modal-footer">
-    <button class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-    <button class="btn btn-success" onclick="enregistrer()">
-        <i class="bi bi-save"></i> Enregistrer
-    </button>
+    <button class="btn btn-success" onclick="validerFormation()">Valider</button>
 </div>
 
 </div>
 </div>
 </div>
 
+<!-- ================= JAVASCRIPT ================= -->
 <script>
-let apprentis = JSON.parse(localStorage.getItem("apprentis")) || [];
+let participants = JSON.parse(localStorage.getItem("participants")) || [];
+let photoBase64 = "";
+let editIndex = null;
 
-function enregistrer() {
-    const nom = apprentiNom.value.trim();
-    const formation = formationSelect.value;
-    const formateur = formateurNom.value.trim();
-    const jours = nbJours.value;
-    const index = editIndex.value;
+/* PHOTO */
+photo.onchange = function(){
+    const file = this.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => photoBase64 = reader.result;
+    reader.readAsDataURL(file);
+};
 
-    if (!nom || !formation || !formateur || !jours) return alert("Tous les champs sont obligatoires");
-
-    const data = { nom, formation, formateur, jours };
-
-    index === "" ? apprentis.push(data) : apprentis[index] = data;
-
-    localStorage.setItem("apprentis", JSON.stringify(apprentis));
-    resetForm();
-    afficherApprentis();
-    dashboard();
-    bootstrap.Modal.getInstance(modalForm).hide();
+/* FORMATION */
+function validerFormation(){
+    const r = document.querySelector('input[name="formationRadio"]:checked');
+    if(!r){ alert("Choisissez une formation"); return; }
+    formation.value = r.value;
+    bootstrap.Modal.getInstance(modalFormation).hide();
 }
 
-function afficherApprentis() {
-    const search = recherche.value.toLowerCase();
-    tableApprentis.innerHTML = "";
-    apprentis.forEach((a, i) => {
-        if (a.nom.toLowerCase().includes(search) || a.formation.toLowerCase().includes(search)) {
-            tableApprentis.innerHTML += `
-            <tr>
-                <td>${i+1}</td>
-                <td>${a.nom}</td>
-                <td><span class="badge bg-secondary">${a.formation}</span></td>
-                <td>${a.formateur}</td>
-                <td>${a.jours}</td>
-                <td class="text-center">
-                    <button class="btn btn-warning btn-sm" onclick="modifier(${i})"><i class="bi bi-pencil"></i></button>
-                    <button class="btn btn-danger btn-sm" onclick="supprimer(${i})"><i class="bi bi-trash"></i></button>
-                </td>
-            </tr>`;
-        }
+/* ENREGISTRER / MODIFIER */
+function enregistrer(){
+    const telRegex = /^(\+243|0)(81|82|83|84|85|89|97|99)\d{7}$/;
+    if(!telRegex.test(telephone.value)){
+        alert("Numéro RDC invalide");
+        return;
+    }
+
+    const data = {
+        nom: nom.value,
+        prenom: prenom.value,
+        postnom: postnom.value,
+        telephone: telephone.value,
+        profession: profession.value,
+        formation: formation.value,
+        photo: photoBase64 || (editIndex !== null ? participants[editIndex].photo : "")
+    };
+
+    if(Object.values(data).includes("")){
+        alert("Tous les champs sont obligatoires");
+        return;
+    }
+
+    if(editIndex === null){
+        participants.push(data);
+    }else{
+        participants[editIndex] = data;
+        editIndex = null;
+    }
+
+    localStorage.setItem("participants", JSON.stringify(participants));
+    afficher();
+    resetForm();
+}
+
+/* AFFICHAGE */
+function afficher(){
+    tableParticipants.innerHTML = "";
+    participants.forEach((p,i)=>{
+        tableParticipants.innerHTML += `
+        <tr>
+            <td>${i+1}</td>
+            <td><img src="${p.photo}" class="photo-preview"></td>
+            <td>${p.nom} ${p.prenom} ${p.postnom}</td>
+            <td>${p.telephone}</td>
+            <td>${p.profession}</td>
+            <td>${p.formation}</td>
+            <td>
+                <button class="btn btn-warning btn-sm" onclick="modifier(${i})">✏️</button>
+                <button class="btn btn-danger btn-sm" onclick="supprimer(${i})">🗑️</button>
+            </td>
+        </tr>`;
     });
 }
 
-function modifier(i) {
-    const a = apprentis[i];
-    apprentiNom.value = a.nom;
-    formationSelect.value = a.formation;
-    formateurNom.value = a.formateur;
-    nbJours.value = a.jours;
-    editIndex.value = i;
-    new bootstrap.Modal(modalForm).show();
+/* MODIFIER */
+function modifier(i){
+    const p = participants[i];
+    nom.value = p.nom;
+    prenom.value = p.prenom;
+    postnom.value = p.postnom;
+    telephone.value = p.telephone;
+    profession.value = p.profession;
+    formation.value = p.formation;
+    photoBase64 = p.photo;
+    editIndex = i;
+
+    document.querySelectorAll('input[name="formationRadio"]').forEach(r=>{
+        r.checked = (r.value === p.formation);
+    });
+
+    window.scrollTo({top:0, behavior:"smooth"});
 }
 
-function supprimer(i) {
-    if (confirm("Supprimer cet apprenti ?")) {
-        apprentis.splice(i,1);
-        localStorage.setItem("apprentis", JSON.stringify(apprentis));
-        afficherApprentis();
-        dashboard();
+/* SUPPRIMER */
+function supprimer(i){
+    if(confirm("Supprimer ce participant ?")){
+        participants.splice(i,1);
+        localStorage.setItem("participants", JSON.stringify(participants));
+        afficher();
+        resetForm();
     }
 }
 
-function dashboard() {
-    totalApprentis.innerText = apprentis.length;
+/* RESET */
+function resetForm(){
+    document.querySelectorAll("input, select").forEach(e=>e.value="");
+    photoBase64 = "";
+    editIndex = null;
+    document.querySelectorAll('input[name="formationRadio"]').forEach(r=>r.checked=false);
 }
 
-function resetForm() {
-    apprentiNom.value = "";
-    formationSelect.value = "";
-    formateurNom.value = "";
-    nbJours.value = "";
-    editIndex.value = "";
-}
-
-function exportPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    doc.text("Liste des Apprentis", 10, 10);
-    let y = 20;
-    apprentis.forEach(a => {
-        doc.text(`${a.nom} | ${a.formation} | ${a.formateur} | ${a.jours} jours`, 10, y);
-        y += 8;
-    });
-    doc.save("apprentis.pdf");
-}
-
-function exportExcel() {
-    const ws = XLSX.utils.json_to_sheet(apprentis);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Apprentis");
-    XLSX.writeFile(wb, "apprentis.xlsx");
-}
-
-afficherApprentis();
-dashboard();
+afficher();
 </script>
 
 </body>
