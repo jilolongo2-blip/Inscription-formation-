@@ -144,14 +144,29 @@ body{
 <div class="form-check">
     <input class="form-check-input" type="radio" name="formationRadio" value="Développement Web">
     <label class="form-check-label">Développement Web</label>
+
 </div>
+    <div class="form-check">
+    <input class="form-check-input" type="radio" name="formationRadio" value="Développement Web">
+    <label class="form-check-label">Économétrie appliqué</label>
+    
+    </div>
+    <div class="form-check">
+    <input class="form-check-input" type="radio" name="formationRadio" value="Développement Web">
+    <label class="form-check-label">Machine learning</label>
+    </div>
 <div class="form-check">
     <input class="form-check-input" type="radio" name="formationRadio" value="Comptabilité SYSCOHADA">
     <label class="form-check-label">Comptabilité SYSCOHADA</label>
 </div>
+
+    <div class="form-check">
+    <input class="form-check-input" type="radio" name="formationRadio" value="Comptabilité SYSCOHADA">
+    <label class="form-check-label"></label>
+    </div>
 <div class="form-check">
     <input class="form-check-input" type="radio" name="formationRadio" value="Power BI">
-    <label class="form-check-label">Power BI</label>
+    <label class="form-check-label">entrepôt de données avec Power BI</label>
 </div>
 </div>
 
@@ -222,8 +237,8 @@ function afficher(){
             <td>${p.profession}</td>
             <td>${p.formation}</td>
             <td class="text-center">
-                <button class="btn btn-warning btn-sm" onclick="modifier(${i})">✏️</button>
-                <button class="btn btn-danger btn-sm" onclick="supprimer(${i})">🗑️</button>
+                <button class="btn btn-warning btn-sm" onclick="modifier(${i})">modifier</button>
+                
             </td>
         </tr>`;
     });
