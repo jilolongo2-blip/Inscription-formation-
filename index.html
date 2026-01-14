@@ -183,17 +183,9 @@ body{
 <!-- ================= JAVASCRIPT ================= -->
 <script>
 let participants = JSON.parse(localStorage.getItem("participants")) || [];
-let photoBase64 = "";
+
 let editIndex = null;
 
-/* PHOTO */
-photo.onchange = function(){
-    const file = this.files[0];
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = () => photoBase64 = reader.result;
-    reader.readAsDataURL(file);
-};
 
 /* FORMATION */
 function validerFormation(){
@@ -217,8 +209,7 @@ function enregistrer(){
         postnom: postnom.value,
         telephone: telephone.value,
         profession: profession.value,
-        formation: formation.value,
-        photo: photoBase64 || (editIndex !== null ? participants[editIndex].photo : "")
+        formation: formation.value
     };
 
     if(Object.values(data).includes("")){
@@ -290,7 +281,6 @@ function supprimer(i){
 /* RESET */
 function resetForm(){
     document.querySelectorAll("input, select").forEach(e=>e.value="");
-    photoBase64 = "";
     editIndex = null;
     document.querySelectorAll('input[name="formationRadio"]').forEach(r=>r.checked=false);
 }
