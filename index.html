@@ -204,11 +204,7 @@ function validerFormation(){
 
 /* ENREGISTRER */
 function enregistrer(){
-    const telRegex = /^(\+243|0)(81|82|83|84|85|89|97|99|98)\d{7}$/;
-    if(!telRegex.test(telephone.value)){
-        alert("Numéro RDC invalide");
-        return;
-    }
+
 
     const data = {
         nom: nom.value,
