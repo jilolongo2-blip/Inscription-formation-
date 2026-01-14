@@ -236,7 +236,7 @@ function afficher(){
         tableParticipants.innerHTML += `
         <tr>
             <td>${i+1}</td>
-            <td><img src="${p.photo}" class="photo-preview"></td>
+            
             <td>${p.nom} ${p.prenom} ${p.postnom}</td>
             <td>${p.telephone}</td>
             <td>${p.profession}</td>
@@ -269,14 +269,7 @@ function modifier(i){
 }
 
 /* SUPPRIMER */
-function supprimer(i){
-    if(confirm("Supprimer ce participant ?")){
-        participants.splice(i,1);
-        localStorage.setItem("participants", JSON.stringify(participants));
-        afficher();
-        resetForm();
-    }
-}
+
 
 /* RESET */
 function resetForm(){
