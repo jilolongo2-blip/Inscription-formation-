@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -10,33 +9,32 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
+<!-- Excel -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
 <style>
 body{
     background:#f5f7fb;
     font-family:"Segoe UI", sans-serif;
 }
-.card{border-radius:12px;}
-.photo-preview{
-    width:55px;
-    height:55px;
-    object-fit:cover;
-    border-radius:50%;
-}
+.card{border-radius:14px;}
+.navbar-brand img{width:45px;}
 </style>
 </head>
 
 <body>
 
+<!-- NAVBAR -->
 <nav class="navbar navbar-dark bg-dark px-4">
-    <span class="navbar-brand fw-bold"><img class="img-fluid" style="width:50px;heigth:50px" src="IMG_0213.PNG"></span>
+    <span class="navbar-brand fw-bold">📘 Gestion des Participants</span>
 </nav>
 
 <div class="container py-4">
 
-<!-- ================= FORMULAIRE ================= -->
+<!-- FORMULAIRE -->
 <div class="card shadow-sm mb-4">
 <div class="card-header bg-primary text-white fw-bold">
-    Formulaire d’inscription
+ Formulaire d’inscription
 </div>
 
 <div class="card-body">
@@ -79,28 +77,13 @@ body{
 </div>
 
 <div class="col-md-4">
-    <label class="form-label">Téléphone (RDC)</label>
+    <label class="form-label">Téléphone</label>
     <input type="tel" id="telephone" class="form-control" placeholder="+24397xxxxxxx">
-</div>
-
-<div class="col-md-6">
-    <label class="form-label">Adresse</label>
-    <input type="text" id="adresse" class="form-control">
-</div>
-
-<div class="col-md-6">
-    <label class="form-label">Domaine d’étude</label>
-    <input type="text" id="domaine" class="form-control">
 </div>
 
 <div class="col-md-6">
     <label class="form-label">Profession</label>
     <input type="text" id="profession" class="form-control">
-</div>
-
-<div class="col-md-6">
-    <label class="form-label">Photo du participant</label>
-    <input type="file" id="photo" class="form-control" accept="image/*">
 </div>
 
 <div class="col-md-6">
@@ -114,17 +97,18 @@ body{
 </div>
 
 <div class="col-12 text-end">
-    <button class="btn btn-success" onclick="enregistrer()">Enregistrer</button>
+    <button class="btn btn-success" onclick="enregistrer()"> Enregistrer</button>
 </div>
 
 </div>
 </div>
 </div>
 
-<!-- ================= TABLE ================= -->
+<!-- TABLE -->
 <div class="card shadow-sm">
-<div class="card-header bg-dark text-white fw-bold">
-    Liste des participants
+<div class="card-header bg-dark text-white fw-bold d-flex justify-content-between align-items-center">
+    <span>Liste des participants</span>
+    <button class="btn btn-success btn-sm" onclick="exportExcel()">Exporter Excel</button>
 </div>
 
 <div class="card-body table-responsive">
@@ -132,12 +116,11 @@ body{
 <thead class="table-dark">
 <tr>
 <th>#</th>
-<th>Photo</th>
 <th>Nom complet</th>
 <th>Téléphone</th>
 <th>Profession</th>
 <th>Formation</th>
-<th>Actions</th>
+<th class="text-center">Actions</th>
 </tr>
 </thead>
 <tbody id="tableParticipants"></tbody>
@@ -147,7 +130,7 @@ body{
 
 </div>
 
-<!-- ================= MODAL FORMATION ================= -->
+<!-- MODAL FORMATION -->
 <div class="modal fade" id="modalFormation">
 <div class="modal-dialog modal-dialog-centered">
 <div class="modal-content">
@@ -180,12 +163,10 @@ body{
 </div>
 </div>
 
-<!-- ================= JAVASCRIPT ================= -->
+<!-- JAVASCRIPT -->
 <script>
 let participants = JSON.parse(localStorage.getItem("participants")) || [];
-
 let editIndex = null;
-
 
 /* FORMATION */
 function validerFormation(){
@@ -195,7 +176,7 @@ function validerFormation(){
     bootstrap.Modal.getInstance(modalFormation).hide();
 }
 
-/* ENREGISTRER / MODIFIER */
+/* ENREGISTRER */
 function enregistrer(){
     const telRegex = /^(\+243|0)(81|82|83|84|85|89|97|99)\d{7}$/;
     if(!telRegex.test(telephone.value)){
@@ -236,12 +217,11 @@ function afficher(){
         tableParticipants.innerHTML += `
         <tr>
             <td>${i+1}</td>
-            
             <td>${p.nom} ${p.prenom} ${p.postnom}</td>
             <td>${p.telephone}</td>
             <td>${p.profession}</td>
             <td>${p.formation}</td>
-            <td>
+            <td class="text-center">
                 <button class="btn btn-warning btn-sm" onclick="modifier(${i})">✏️</button>
                 <button class="btn btn-danger btn-sm" onclick="supprimer(${i})">🗑️</button>
             </td>
@@ -258,24 +238,46 @@ function modifier(i){
     telephone.value = p.telephone;
     profession.value = p.profession;
     formation.value = p.formation;
-    photoBase64 = p.photo;
     editIndex = i;
-
-    document.querySelectorAll('input[name="formationRadio"]').forEach(r=>{
-        r.checked = (r.value === p.formation);
-    });
-
     window.scrollTo({top:0, behavior:"smooth"});
 }
 
 /* SUPPRIMER */
-
+function supprimer(i){
+    if(confirm("Supprimer ce participant ?")){
+        participants.splice(i,1);
+        localStorage.setItem("participants", JSON.stringify(participants));
+        afficher();
+    }
+}
 
 /* RESET */
 function resetForm(){
     document.querySelectorAll("input, select").forEach(e=>e.value="");
-    editIndex = null;
     document.querySelectorAll('input[name="formationRadio"]').forEach(r=>r.checked=false);
+}
+
+/* EXPORT EXCEL */
+function exportExcel(){
+    if(participants.length === 0){
+        alert("Aucune donnée à exporter");
+        return;
+    }
+
+    const data = participants.map((p,i)=>({
+        "N°": i+1,
+        "Nom": p.nom,
+        "Prénom": p.prenom,
+        "Postnom": p.postnom,
+        "Téléphone": p.telephone,
+        "Profession": p.profession,
+        "Formation": p.formation
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Participants");
+    XLSX.writeFile(wb, "liste_participants.xlsx");
 }
 
 afficher();
@@ -283,3 +285,4 @@ afficher();
 
 </body>
 </html>
+
